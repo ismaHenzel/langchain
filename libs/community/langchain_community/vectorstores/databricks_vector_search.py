@@ -48,6 +48,9 @@ class DatabricksVectorSearch(VectorStore):
         columns: The list of column names to get when doing the search.
                 Defaults to ``[primary_key, text_column]``.
 
+        hybrid_search: set to True if you want to use datbaricks hybrid_search mode in the vectorstore.
+                Defaults to False.
+
     Delta-sync index with Databricks-managed embeddings manages the ingestion, deletion,
     and embedding for you.
     Manually ingestion/deletion of the documents/texts is not supported for delta-sync
@@ -110,6 +113,7 @@ class DatabricksVectorSearch(VectorStore):
         embedding: Optional[Embeddings] = None,
         text_column: Optional[str] = None,
         columns: Optional[List[str]] = None,
+        use_hybrid: Optional[bool] = False
     ):
         try:
             from databricks.vector_search.client import VectorSearchIndex
@@ -118,6 +122,9 @@ class DatabricksVectorSearch(VectorStore):
                 "Could not import databricks-vectorsearch python package. "
                 "Please install it with `pip install databricks-vectorsearch`."
             ) from e
+        # hybrid_search
+        self.use_hybrid = use_hybrid
+
         # index
         self.index = index
         if not isinstance(index, VectorSearchIndex):
@@ -277,7 +284,7 @@ class DatabricksVectorSearch(VectorStore):
         return True
 
     def similarity_search(
-        self, query: str, k: int = 4, filters: Optional[Any] = None, **kwargs: Any
+        self, query: str, k: int = 4, filters: Optional[Any] = None,**kwargs: Any
     ) -> List[Document]:
         """Return docs most similar to query.
 
@@ -290,7 +297,7 @@ class DatabricksVectorSearch(VectorStore):
             List of Documents most similar to the embedding.
         """
         docs_with_score = self.similarity_search_with_score(
-            query=query, k=k, filters=filters, **kwargs
+            query=query, k=k, filters=filters,**kwargs
         )
         return [doc for doc, _ in docs_with_score]
 
@@ -321,6 +328,7 @@ class DatabricksVectorSearch(VectorStore):
             query_vector=query_vector,
             filters=filters,
             num_results=k,
+            use_hybrid=self.use_hybrid
         )
         return self._parse_search_response(search_resp)
 
@@ -420,6 +428,7 @@ class DatabricksVectorSearch(VectorStore):
             query_vector=embedding,
             filters=filters,
             num_results=fetch_k,
+            use_hybrid=self.use_hybrid
         )
 
         embeddings_result_index = (
@@ -493,6 +502,7 @@ class DatabricksVectorSearch(VectorStore):
             query_vector=embedding,
             filters=filters,
             num_results=k,
+            use_hybrid= self.use_hybrid
         )
         return self._parse_search_response(search_resp)
 

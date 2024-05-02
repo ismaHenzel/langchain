@@ -259,7 +259,7 @@ class DatabricksVectorSearch(VectorStore):
         """Access the query embedding object if available."""
         return self._embedding
 
-    def delete(self, ids: Optional[List[Any]] = None, **kwargs: Any) -> Optional[bool]:
+    def delete(self, ids: Optional[List[Any]] = None,**kwargs: Any) -> Optional[bool]:
         """Delete documents from the index.
 
         Only support direct-access index.
@@ -277,7 +277,7 @@ class DatabricksVectorSearch(VectorStore):
         return True
 
     def similarity_search(
-        self, query: str, k: int = 4, filters: Optional[Any] = None, **kwargs: Any
+        self, query: str, k: int = 4, filters: Optional[Any] = None,**kwargs: Any
     ) -> List[Document]:
         """Return docs most similar to query.
 
@@ -290,12 +290,12 @@ class DatabricksVectorSearch(VectorStore):
             List of Documents most similar to the embedding.
         """
         docs_with_score = self.similarity_search_with_score(
-            query=query, k=k, filters=filters, **kwargs
+            query=query, k=k, filters=filters,**kwargs
         )
         return [doc for doc, _ in docs_with_score]
 
     def similarity_search_with_score(
-        self, query: str, k: int = 4, filters: Optional[Any] = None, **kwargs: Any
+        self, query: str, k: int = 4, filters: Optional[Any] = None,**kwargs: Any
     ) -> List[Tuple[Document, float]]:
         """Return docs most similar to query, along with scores.
 
@@ -462,7 +462,7 @@ class DatabricksVectorSearch(VectorStore):
             List of Documents most similar to the embedding.
         """
         docs_with_score = self.similarity_search_by_vector_with_score(
-            embedding=embedding, k=k, filters=filters, **kwargs
+            embedding=embedding, k=k, filters=filters,**kwargs
         )
         return [doc for doc, _ in docs_with_score]
 
